@@ -58,8 +58,8 @@ public class BookDaoImpl implements BookDao {
     @SuppressWarnings("uncheked")
     public List<Book> getBookByTitle(String title) {
         Session session = this.sessionFactory.getCurrentSession();
-        List<Book> bookList = session.createQuery("from Book book where book.bookTitle = :titleParam").
-                setParameter("titleParam", title).list();
+        List<Book> bookList = session.createQuery("from Book book where book.bookTitle LIKE '%" + title + "%'")
+                .list();
         for(Book book: bookList){
             logger.info("Book list by tilte: " + book);
         }
