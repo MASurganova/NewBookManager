@@ -58,7 +58,7 @@ public class BookDaoImpl implements BookDao {
     @SuppressWarnings("uncheked")
     public List<Book> getBookByTitle(String title) {
         Session session = this.sessionFactory.getCurrentSession();
-        List<Book> bookList = session.createQuery("from Book book where book.bookTitle LIKE '%" + title + "%'")
+        List<Book> bookList = session.createQuery("from Book book where book.bookTitle LIKE '%" + title + "%' ORDER BY book.id ASC")
                 .list();
         for(Book book: bookList){
             logger.info("Book list by tilte: " + book);
@@ -71,7 +71,7 @@ public class BookDaoImpl implements BookDao {
     @SuppressWarnings("unchecked")
     public List<Book> listBooks() {
         Session session = this.sessionFactory.getCurrentSession();
-        List<Book> bookList = session.createQuery("from Book").list();
+        List<Book> bookList = session.createQuery("from Book book ORDER BY book.id ASC").list();
 
         for(Book book: bookList){
             logger.info("Book list: " + book);
@@ -84,7 +84,7 @@ public class BookDaoImpl implements BookDao {
     @SuppressWarnings("unchecked")
     public List<Book> listUnreadBooks() {
         Session session = this.sessionFactory.getCurrentSession();
-        List<Book> bookList = session.createQuery("from Book book where book.readAlready = 'FALSE'").list();
+        List<Book> bookList = session.createQuery("from Book book where book.readAlready = 'FALSE' ORDER BY book.id ASC").list();
 
         for(Book book: bookList){
             logger.info("List unread books: " + book);
@@ -97,7 +97,7 @@ public class BookDaoImpl implements BookDao {
     @SuppressWarnings("unchecked")
     public List<Book> listBooksByYear(int printYear) {
         Session session = this.sessionFactory.getCurrentSession();
-        List<Book> bookList = session.createQuery("from Book book where book.printYear >= :printYearParam").
+        List<Book> bookList = session.createQuery("from Book book where book.printYear >= :printYearParam ORDER BY book.id ASC").
                 setParameter("printYearParam", printYear).list();
 
         for(Book book: bookList)

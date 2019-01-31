@@ -11,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.jws.WebParam;
 import java.util.List;
 
 @Controller
@@ -18,17 +19,17 @@ public class BookController {
     private BookService bookService;
     private int pageSize = 10;
 
-    @Autowired(required = true)
+    @Autowired
     @Qualifier(value = "bookService")
     public void setBookService(BookService bookService) {
         this.bookService = bookService;
     }
 
-    @RequestMapping(value = "books", method = RequestMethod.GET)
+    @RequestMapping(value = "/", method = RequestMethod.GET)
     public ModelAndView listBooks(@RequestParam(required = false) Integer page) {
         ModelAndView modelAndView = new ModelAndView("books");
         modelAndView.addObject("pageName", "Books list");
-        modelAndView.addObject("pageURL", "/books");
+        modelAndView.addObject("pageURL", "/");
 
         List<Book> books = bookService.listBooks();
         pagination(page, modelAndView, books);
@@ -46,28 +47,29 @@ public class BookController {
         pagination(page, modelAndView, books);
 
         return modelAndView;
+
     }
 
     @RequestMapping(value = "bookListByYear")
-    public ModelAndView listByYear(@ModelAttribute("printYearForList") int printYear,
+    public ModelAndView listByYear(@ModelAttribute("year") int year,
                                    @RequestParam(required = false) Integer page){
 
         ModelAndView modelAndView = new ModelAndView("books");
-        modelAndView.addObject("pageName", "List of books since " + printYear);
-        modelAndView.addObject("pageURL", "/bookListByYear?printYearForList=" + printYear);
+        modelAndView.addObject("pageName", "List of books since " + year);
+        modelAndView.addObject("pageURL", "/bookListByYear?year=" + year);
 
-        List<Book> books = bookService.listBooksByYear(printYear);
+        List<Book> books = bookService.listBooksByYear(year);
         pagination(page, modelAndView, books);
 
         return modelAndView;
     }
 
     @RequestMapping(value = "bookListByTitle")
-    public ModelAndView listByTitle(@ModelAttribute("bookTitleForList") String title,
+    public ModelAndView listByTitle(@ModelAttribute("title") String title,
                                     @RequestParam(required = false) Integer page) {
         ModelAndView modelAndView = new ModelAndView("books");
         modelAndView.addObject("pageName", "Book list by title '" + title + "'");
-        modelAndView.addObject("pageURL", "/bookListByTitle?bookTitleForList=" + title);
+        modelAndView.addObject("pageURL", "/bookListByTitle?title=" + title);
 
         List<Book> books = bookService.getBookByTitle(title);
         pagination(page, modelAndView, books);
@@ -100,7 +102,7 @@ public class BookController {
         modelAndView.addObject("bookTitleForList");
     }
 
-    @RequestMapping(value = "/books/add", method = RequestMethod.POST)
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String addBook(@ModelAttribute("book") Book book){
         if(book.getId() == 0){
             this.bookService.addBook(book);
@@ -109,31 +111,37 @@ public class BookController {
             this.bookService.updateBook(book);
         }
 
-        return "redirect:/books";
+        return "redirect:/";
+    }
+
+    @RequestMapping(value = "/update/{id}", method = RequestMethod.GET)
+    public String getBook(@PathVariable("id") int id, Model model){
+        model.addAttribute("book", this.bookService.getBookById(id));
+        model.addAttribute("pageName", "Update the book");
+        return "book";
+    }
+
+    @RequestMapping(value = "/add", method = RequestMethod.GET)
+    public String getBookForm(Model model){
+        model.addAttribute("book", new Book());
+        model.addAttribute("pageName", "Add a book");
+        return "book";
     }
 
     @RequestMapping("/remove/{id}")
     public String removeBook(@PathVariable("id") int id){
         this.bookService.removeBook(id);
 
-        return "redirect:/books";
+        return "redirect:/";
     }
 
-    @RequestMapping("edit/{id}")
-    public String editBook(@PathVariable("id") int id, Model model){
-        model.addAttribute("book", this.bookService.getBookById(id));
-        model.addAttribute("listBooks", this.bookService.listBooks());
-
-        return "books";
-    }
-
-    @RequestMapping("readAlready/{id}")
+    @RequestMapping("/read/{id}")
     public String bookData(@PathVariable("id") int id, Model model){
         Book book = this.bookService.getBookById(id);
         if (!book.isReadAlready()){
             book.setReadAlready(true);
             this.bookService.updateBook(book);
         }
-        return "redirect:/books";
+        return "redirect:/";
     }
 }

@@ -5,7 +5,7 @@
 <%@ page session="false" %>
 <html>
 <head>
-    <title>Books Page</title>
+    <title>Book Manager</title>
 
     <style type="text/css">
         .tg {
@@ -41,14 +41,22 @@
             background-color: #f0f0f0;
         }
 
-        .tg .tg-4eph {
-            background-color: #f9f9f9
-        }
     </style>
 </head>
 <body>
 
 <h3>${pageName}</h3>
+<c:if test="${pageName =='Books list'}">
+    <a href="unreadList/"><button>List of unread books</button></a>
+    <br>
+    <br>
+    <a href="add/"><button>Add a book</button></a>
+</c:if>
+<c:if test="${pageName !='Books list'}">
+    <a href="http://localhost:8080/books/"><button>Back to main</button></a>
+</c:if>
+<br>
+<br>
 
 <div id="pagination">
     <c:url value="${pageURL}" var="prev">
@@ -85,7 +93,7 @@
             <th width="150">Description</th>
             <th width="120">Author</th>
             <th width="80">ISBN</th>
-            <th width="60">Print year</th>
+            <th width="60">Year</th>
             <th width="60">Already read</th>
             <th width="60">Read</th>
             <th width="60">Update</th>
@@ -100,8 +108,8 @@
                 <td>${book.bookISBN}</td>
                 <td>${book.printYear}</td>
                 <td>${book.readAlready}</td>
-                <td><a href="<c:url value='/readAlready/${book.id}'/>">Read</a></td>
-                <td><a href="<c:url value='/edit/${book.id}'/>">Update</a></td>
+                <td><a href="<c:url value='/read/${book.id}'/>">Read</a></td>
+                <td><a href="<c:url value='/update/${book.id}'/>">Update</a></td>
                 <td><a href="<c:url value='/remove/${book.id}'/>">Delete</a></td>
             </tr>
         </c:forEach>
@@ -109,137 +117,40 @@
 </c:if>
 
 <c:if test="${pageName =='Books list'}">
-    <h3>Add a Book</h3>
-
-    <c:url var="addAction" value="/books/add"/>
-
-    <form:form action="${addAction}" commandName="book">
-        <table>
-            <c:if test="${!empty book.bookTitle}">
-                <tr>
-                    <td>
-                        <form:label path="id">
-                            <spring:message text="ID"/>
-                        </form:label>
-                    </td>
-                    <td>
-                        <form:input path="id" readonly="true" size="8" disabled="true"/>
-                        <form:hidden path="id"/>
-                    </td>
-
-                </tr>
-            </c:if>
-            <tr>
-                <td>
-                    <form:label path="bookTitle">
-                        <spring:message text="Title"/>
-                    </form:label>
-                </td>
-                <td>
-                    <form:input path="bookTitle"/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <form:label path="bookDescription">
-                        <spring:message text="Description"/>
-                    </form:label>
-                </td>
-                <td>
-                    <form:input path="bookDescription"/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <form:label path="bookAuthor">
-                        <spring:message text="Author"/>
-                    </form:label>
-                </td>
-
-                <c:if test="${!empty book.bookTitle}">
-                    <td>
-                        <form:input path="bookAuthor" readonly="true" disabled="true"/>
-                        <form:hidden path="bookAuthor"/>
-                    </td>
-                </c:if>
-                <c:if test="${empty book.bookTitle}">
-                    <td>
-                        <form:input path="bookAuthor"/>
-                    </td>
-                </c:if>
-            </tr>
-            <tr>
-                <td>
-                    <form:label path="bookISBN">
-                        <spring:message text="ISBN"/>
-                    </form:label>
-                </td>
-                <td>
-                    <form:input path="bookISBN"/>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <form:label path="printYear">
-                        <spring:message text="Print year"/>
-                    </form:label>
-                </td>
-                <td>
-                    <form:input path="printYear"/>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <c:if test="${!empty book.bookTitle}">
-                        <input type="submit"
-                               value="<spring:message text="Update Book"/>"/>
-                    </c:if>
-                    <c:if test="${empty book.bookTitle}">
-                        <input type="submit"
-                               value="<spring:message text="Add Book"/>"/>
-                    </c:if>
-                </td>
-            </tr>
-        </table>
-    </form:form>
-
-
-    <a href="unreadList/">List of unread books</a>
-
-    <h3>List of books by title</h3>
 
     <c:url var="searchByTitleAction" value="/bookListByTitle"/>
 
     <form:form action="${searchByTitleAction}">
         <table>
-            <tr>
-                <td>
-                    <input name="bookTitleForList"/>
-                </td>
-                <td >
-                    <input type="submit"
-                           value="<spring:message text="title"/>"/>
-                </td>
-            </tr>
+            <td>
+                <label name="title">
+                        <spring:message text="Search by title"/>
+            </td>
+            <td>
+                <input name="title"/>
+            </td>
+            <td >
+                <input type="submit"
+                       value="<spring:message text="Search"/>"/>
+            </td>
         </table>
     </form:form>
-
-    <h3>List of books since the year</h3>
 
     <c:url var="searchByYearAction" value="/bookListByYear"/>
 
     <form:form action="${searchByYearAction}">
-        <table>
-            <tr>
-                <td>
-                    <input name="printYearForList"/>
-                </td>
-                <td>
-                    <input type="submit"
-                           value="<spring:message text="print year"/>"/>
-                </td>
-            </tr>
-        </table>
+        <td>
+            <label name="year">
+                <spring:message text="Search by year"/>
+            </label>
+        </td>
+        <td>
+            <input name="year"/>
+        </td>
+        <td>
+            <input type="submit"
+                   value="<spring:message text="Search"/>"/>
+        </td>
     </form:form>
 </c:if>
 
