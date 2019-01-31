@@ -1,3 +1,5 @@
+Book Manager (Maven/Spring/SpringMVC/Hibernate/HTML/JSP)
+Cread/Read/Update/Delete book in repository. Search by title and year.
 Script for MySQL - src/resources/database/initDB.sql
 
 
