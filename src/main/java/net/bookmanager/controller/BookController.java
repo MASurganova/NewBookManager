@@ -39,7 +39,7 @@ public class BookController {
     @RequestMapping(value = "unreadList", method = RequestMethod.GET)
     public ModelAndView listUnreadBooks(@RequestParam(required = false) Integer page) {
         ModelAndView modelAndView = new ModelAndView("books");
-        modelAndView.addObject("pageName", "Listof unread books");
+        modelAndView.addObject("pageName", "List of unread books");
         modelAndView.addObject("pageURL", "/unreadList");
 
         List<Book> books = bookService.listUnreadBooks();
@@ -47,6 +47,21 @@ public class BookController {
 
         return modelAndView;
     }
+
+    @RequestMapping(value = "bookListByYear")
+    public ModelAndView listByYear(@ModelAttribute("printYearForList") int printYear,
+                                   @RequestParam(required = false) Integer page){
+
+        ModelAndView modelAndView = new ModelAndView("books");
+        modelAndView.addObject("pageName", "List of books since " + printYear);
+        modelAndView.addObject("pageURL", "/bookListByYear?printYearForList=" + printYear);
+
+        List<Book> books = bookService.listBooksByYear(printYear);
+        pagination(page, modelAndView, books);
+
+        return modelAndView;
+    }
+
 
     private void pagination(@RequestParam(required = false) Integer page, ModelAndView modelAndView, List<Book> books) {
         PagedListHolder<Book> pagedListHolder = new PagedListHolder<Book>(books);
@@ -79,13 +94,6 @@ public class BookController {
         model.addAttribute("listByTitle", this.bookService.getBookByTitle(title));
 
         return "bookListByTitle";
-    }
-
-    @RequestMapping(value = "bookListByYear", method = RequestMethod.POST)
-    public String listByYear(@ModelAttribute("printYearForList") int printYear, Model model){
-        model.addAttribute("listByYear", this.bookService.listBooksByYear(printYear));
-
-        return "bookListByYear";
     }
 
     @RequestMapping(value = "/books/add", method = RequestMethod.POST)

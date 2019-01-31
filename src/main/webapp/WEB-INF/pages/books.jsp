@@ -224,7 +224,7 @@
 
 </form:form>
 
-<h3>List of books from year</h3>
+<h3>List of books since the year</h3>
 
 <c:url var="searchByYearAction" value="/bookListByYear"/>
 
