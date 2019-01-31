@@ -48,10 +48,10 @@
 </head>
 <body>
 
-<h3>Book List</h3>
+<h3>${pageName}</h3>
 
 <div id="pagination">
-    <c:url value="/books" var="prev">
+    <c:url value="${pageURL}" var="prev">
         <c:param name="page" value="${page-1}"/>
     </c:url>
     <c:if test="${page > 1}">
@@ -63,14 +63,14 @@
                 <span>${i.index}</span>
             </c:when>
             <c:otherwise>
-                <c:url value="/books" var="url">
+                <c:url value="${pageURL}" var="url">
                     <c:param name="page" value="${i.index}"/>
                 </c:url>
                 <a href='<c:out value="${url}" />'>${i.index}</a>
             </c:otherwise>
         </c:choose>
     </c:forEach>
-    <c:url value="/books" var="next">
+    <c:url value="${pageURL}" var="next">
         <c:param name="page" value="${page + 1}"/>
     </c:url>
     <c:if test="${page + 1 <= maxPages}">
@@ -86,7 +86,7 @@
             <th width="120">Author</th>
             <th width="80">ISBN</th>
             <th width="60">Print year</th>
-            <th width="60">Rea6already</th>
+            <th width="60">Already read</th>
             <th width="60">Read</th>
             <th width="60">Update</th>
             <th width="60">Delete</th>
@@ -203,17 +203,7 @@
 
 </form:form>
 
-<h3>List of unread books</h3>
-
-<c:url var="searchUnreadAction" value="/unreadList"/>
-
-<form:form action="${searchUnreadAction}">
-    <tr>
-        <input type="submit"
-               value="<spring:message text="Search"/>"/>
-    </tr>
-
-</form:form>
+<a href="unreadList/">List of unread books</a>
 
 <h3>List of books by title</h3>
 

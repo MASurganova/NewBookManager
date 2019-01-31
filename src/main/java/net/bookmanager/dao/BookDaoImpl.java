@@ -84,7 +84,7 @@ public class BookDaoImpl implements BookDao {
     @SuppressWarnings("unchecked")
     public List<Book> listUnreadBooks() {
         Session session = this.sessionFactory.getCurrentSession();
-        List<Book> bookList = session.createQuery("from Book book where book.readAlready = 0").list();
+        List<Book> bookList = session.createQuery("from Book book where book.readAlready = 'FALSE'").list();
 
         for(Book book: bookList){
             logger.info("List unread books: " + book);

@@ -25,10 +25,30 @@ public class BookController {
     }
 
     @RequestMapping(value = "books", method = RequestMethod.GET)
-    public ModelAndView listUsers(@RequestParam(required = false) Integer page) {
+    public ModelAndView listBooks(@RequestParam(required = false) Integer page) {
         ModelAndView modelAndView = new ModelAndView("books");
+        modelAndView.addObject("pageName", "Books list");
+        modelAndView.addObject("pageURL", "/books");
 
         List<Book> books = bookService.listBooks();
+        pagination(page, modelAndView, books);
+
+        return modelAndView;
+    }
+
+    @RequestMapping(value = "unreadList", method = RequestMethod.GET)
+    public ModelAndView listUnreadBooks(@RequestParam(required = false) Integer page) {
+        ModelAndView modelAndView = new ModelAndView("books");
+        modelAndView.addObject("pageName", "Listof unread books");
+        modelAndView.addObject("pageURL", "/unreadList");
+
+        List<Book> books = bookService.listUnreadBooks();
+        pagination(page, modelAndView, books);
+
+        return modelAndView;
+    }
+
+    private void pagination(@RequestParam(required = false) Integer page, ModelAndView modelAndView, List<Book> books) {
         PagedListHolder<Book> pagedListHolder = new PagedListHolder<Book>(books);
         pagedListHolder.setPageSize(pageSize);
         modelAndView.addObject("maxPages", pagedListHolder.getPageCount());
@@ -38,7 +58,7 @@ public class BookController {
 
         modelAndView.addObject("page", page);
 
-        if(page == null || page < 1 || page > pagedListHolder.getPageCount()){
+        if(page > pagedListHolder.getPageCount()){
             pagedListHolder.setPage(0);
             modelAndView.addObject("listBooks", pagedListHolder.getPageList());
         }
@@ -50,25 +70,9 @@ public class BookController {
         modelAndView.addObject("book", new Book());
         modelAndView.addObject("printYearForList");
         modelAndView.addObject("bookTitleForList");
-
-        return modelAndView;
     }
 
-//    @RequestMapping(value = "books", method = RequestMethod.GET)
-//    public String listBooks(Model model){
-//        model.addAttribute("book", new Book());
-//        model.addAttribute("listBooks", this.bookService.listBooks());
-//        model.addAttribute("printYearForList");
-//        model.addAttribute("bookTitleForList");
-//        return "books";
-//    }
 
-    @RequestMapping(value = "unreadList", method = RequestMethod.POST)
-    public String listUnreadBooks(Model model){
-        model.addAttribute("listUnreadBooks", this.bookService.listUnreadBooks());
-
-        return "unreadList";
-    }
 
     @RequestMapping(value = "bookListByTitle", method = RequestMethod.POST)
     public String listByTitle(@ModelAttribute("bookTitleForList") String title, Model model){
