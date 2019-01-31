@@ -62,6 +62,19 @@ public class BookController {
         return modelAndView;
     }
 
+    @RequestMapping(value = "bookListByTitle")
+    public ModelAndView listByTitle(@ModelAttribute("bookTitleForList") String title,
+                                    @RequestParam(required = false) Integer page) {
+        ModelAndView modelAndView = new ModelAndView("books");
+        modelAndView.addObject("pageName", "Book list by title '" + title + "'");
+        modelAndView.addObject("pageURL", "/bookListByTitle?bookTitleForList=" + title);
+
+        List<Book> books = bookService.getBookByTitle(title);
+        pagination(page, modelAndView, books);
+
+        return modelAndView;
+    }
+
 
     private void pagination(@RequestParam(required = false) Integer page, ModelAndView modelAndView, List<Book> books) {
         PagedListHolder<Book> pagedListHolder = new PagedListHolder<Book>(books);
@@ -85,15 +98,6 @@ public class BookController {
         modelAndView.addObject("book", new Book());
         modelAndView.addObject("printYearForList");
         modelAndView.addObject("bookTitleForList");
-    }
-
-
-
-    @RequestMapping(value = "bookListByTitle", method = RequestMethod.POST)
-    public String listByTitle(@ModelAttribute("bookTitleForList") String title, Model model){
-        model.addAttribute("listByTitle", this.bookService.getBookByTitle(title));
-
-        return "bookListByTitle";
     }
 
     @RequestMapping(value = "/books/add", method = RequestMethod.POST)
